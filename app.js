@@ -328,8 +328,55 @@ function mettreAJourConseils(donnees) {
 
 function enregistrerServiceWorker() {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js')
-            .then(() => console.log('Service Worker enregistre'))
-            .catch(err => console.log('Erreur SW:', err));
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('Service Worker enregistre avec succes:', registration.scope);
+                })
+                .catch(error => {
+                    console.log('Erreur enregistrement Service Worker:', error);
+                });
+        });
     }
 }
+
+// Installation manuelle de la PWA
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Empecher l'affichage automatique
+    e.preventDefault();
+    deferredPrompt = e;
+    
+    // Afficher un bouton d'installation
+    const installButton = document.createElement('button');
+    installButton.id = 'install-button';
+    installButton.innerHTML = '📲 Installer l\'application';
+    installButton.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #2e7d32;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 30px;
+        font-size: 14px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        z-index: 1000;
+        cursor: pointer;
+    `;
+    
+    installButton.addEventListener('click', () => {
+        installButton.style.display = 'none';
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('Installation acceptee');
+            }
+            deferredPrompt = null;
+        });
+    });
+    
+    document.body.appendChild(installButton);
+});

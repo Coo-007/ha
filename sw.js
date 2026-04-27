@@ -11,9 +11,14 @@ const urlsToCache = [
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then(cache => cache.addAll(urlsToCache))
-            .catch(err => console.log('Cache error:', err))
+            .then(cache => {
+                console.log('Cache ouvert');
+                return cache.addAll(urlsToCache);
+            })
+            .catch(err => console.log('Erreur cache:', err))
     );
+    // Force l'activation immédiate
+    self.skipWaiting();
 });
 
 // Recuperation des fichiers
@@ -29,7 +34,7 @@ self.addEventListener('fetch', event => {
     );
 });
 
-// Activation et nettoyage
+// Activation
 self.addEventListener('activate', event => {
     event.waitUntil(
         caches.keys().then(keys => {
@@ -39,4 +44,6 @@ self.addEventListener('activate', event => {
             );
         })
     );
+    // Prendre le contrôle immédiatement
+    event.waitUntil(self.clients.claim());
 });

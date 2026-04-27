@@ -258,3 +258,17 @@ body {
         font-size: 1.4rem;
     }
 }
+
+#install-button {
+    display: block;
+}
+
+@media (max-width: 480px) {
+    #install-button {
+        width: calc(100% - 32px);
+        right: 16px;
+        bottom: 16px;
+        left: 16px;
+        text-align: center;
+    }
+}
